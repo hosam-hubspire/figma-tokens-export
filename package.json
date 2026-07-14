@@ -1,0 +1,9 @@
+{
+  "name": "figma-tokens-export",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Figma plugin to export W3C Design Tokens from local variables and push to GitHub",
+  "scripts": {
+    "postinstall": "echo \"No build needed — import manifest.json in Figma (Plugins → Development).\""
+  }
+}

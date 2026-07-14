@@ -1,0 +1,14 @@
+{
+  "name": "Export Design Tokens",
+  "id": "export-design-tokens-local",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma", "dev"],
+  "capabilities": ["inspect"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["https://api.github.com", "https://github.com"],
+    "reasoning": "Push exported design tokens to GitHub repositories via the GitHub REST API."
+  }
+}

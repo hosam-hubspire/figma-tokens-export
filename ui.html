@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Export Design Tokens</title>
+    <style>
+      :root {
+        --bg: var(--figma-color-bg, #ffffff);
+        --bg-secondary: var(--figma-color-bg-secondary, #f5f5f5);
+        --bg-tertiary: var(--figma-color-bg-tertiary, #e6e6e6);
+        --bg-brand: var(--figma-color-bg-brand, #0d99ff);
+        --bg-brand-hover: var(--figma-color-bg-brand-hover, #007be5);
+        --text: var(--figma-color-text, #1e1e1e);
+        --text-secondary: var(--figma-color-text-secondary, #757575);
+        --text-onbrand: var(--figma-color-text-onbrand, #ffffff);
+        --border: var(--figma-color-border, #e6e6e6);
+        --danger: var(--figma-color-text-danger, #e03e1a);
+        --radius: 8px;
+        --font: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 12px/1.45 var(--font);
+      }
+
+      body {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 100vh;
+        position: relative;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .muted {
+        color: var(--text-secondary);
+      }
+
+      .header p {
+        margin: 4px 0 0;
+      }
+
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--bg);
+        overflow: hidden;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 12px;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border);
+        font-weight: 600;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .stat {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 8px 12px;
+        background: var(--bg-secondary);
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+
+      .stat span {
+        color: var(--text-secondary);
+      }
+
+      .collections {
+        max-height: 120px;
+        overflow: auto;
+      }
+
+      .collection {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .collection:last-child {
+        border-bottom: none;
+      }
+
+      .collection label {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .collection input {
+        margin-top: 2px;
+      }
+
+      .collection .meta {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .collection .name {
+        font-weight: 600;
+        word-break: break-word;
+      }
+
+      .collection .detail {
+        margin-top: 2px;
+        color: var(--text-secondary);
+      }
+
+      fieldset {
+        margin: 0;
+        padding: 0;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      legend {
+        padding: 0;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+
+      .choice {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        cursor: pointer;
+      }
+
+      .choice:hover {
+        background: var(--bg-secondary);
+      }
+
+      .choice input {
+        margin-top: 2px;
+      }
+
+      .choice strong {
+        display: block;
+      }
+
+      .form {
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .field label {
+        font-weight: 600;
+      }
+
+      .field input[type="text"],
+      .field input[type="password"] {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 7px 8px;
+        font: inherit;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .check {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+
+      .check input {
+        margin-top: 2px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      button {
+        appearance: none;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-primary {
+        background: var(--bg-brand);
+        color: var(--text-onbrand);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: var(--bg-brand-hover);
+      }
+
+      .btn-secondary {
+        background: var(--bg-tertiary);
+        color: var(--text);
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--text-secondary);
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 4px;
+      }
+
+      .toolbar button {
+        padding: 4px 8px;
+        font-weight: 500;
+        font-size: 11px;
+      }
+
+      .status {
+        min-height: 18px;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .status.error {
+        color: var(--danger);
+      }
+
+      .status.busy {
+        color: var(--text);
+      }
+
+      .preview-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 80px;
+      }
+
+      .preview {
+        margin: 0;
+        padding: 10px 12px;
+        max-height: 100px;
+        overflow: auto;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 11px;
+        line-height: 1.4;
+        white-space: pre;
+        background: var(--bg-secondary);
+      }
+
+      .empty {
+        padding: 14px 12px;
+        color: var(--text-secondary);
+        text-align: center;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding-top: 2px;
+      }
+
+      .token-state {
+        font-size: 11px;
+      }
+
+      .token-state.ok {
+        color: #009a57;
+      }
+
+      a.link {
+        color: var(--bg-brand);
+      }
+
+      .overlay {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.72);
+        z-index: 20;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+        padding: 24px;
+        text-align: center;
+      }
+
+      .overlay.visible {
+        display: flex;
+      }
+
+      .spinner {
+        width: 28px;
+        height: 28px;
+        border: 3px solid var(--border);
+        border-top-color: var(--bg-brand);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .overlay p {
+        margin: 0;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay" id="overlay" aria-live="polite">
+      <div class="spinner"></div>
+      <p id="overlayText">Working…</p>
+    </div>
+
+    <header class="header">
+      <h1>Export Design Tokens</h1>
+      <p class="muted" id="fileLabel">Loading file…</p>
+    </header>
+
+    <div class="stats">
+      <div class="stat">
+        <strong id="collectionCount">—</strong>
+        <span>Collections</span>
+      </div>
+      <div class="stat">
+        <strong id="variableCount">—</strong>
+        <span>Variables</span>
+      </div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-head">
+        <span>Collections</span>
+        <div class="toolbar">
+          <button type="button" class="btn-ghost" id="selectAll">All</button>
+          <button type="button" class="btn-ghost" id="selectNone">None</button>
+        </div>
+      </div>
+      <div class="collections" id="collections">
+        <div class="empty">Scanning local variables…</div>
+      </div>
+    </section>
+
+    <p class="muted">
+      Exports <strong>W3C Design Tokens</strong> JSON
+      (<code>$type</code> / <code>$value</code>), one tree per collection × mode.
+    </p>
+
+    <section class="panel">
+      <div class="panel-head">
+        <span>GitHub</span>
+        <span class="token-state muted" id="tokenState">No token</span>
+      </div>
+      <div class="form">
+        <div class="field">
+          <label for="ghToken">Personal access token</label>
+          <input
+            id="ghToken"
+            type="password"
+            autocomplete="off"
+            placeholder="github_pat_… or ghp_…"
+          />
+          <span class="muted"
+            >Needs <code>repo</code> scope. Stored only in this plugin’s local
+            storage.</span
+          >
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="ghOwner">Owner / org</label>
+            <input id="ghOwner" type="text" placeholder="hosam-hubspire" />
+          </div>
+          <div class="field">
+            <label for="ghBranch">Branch</label>
+            <input id="ghBranch" type="text" placeholder="main" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="ghRepo">Repo name or URL</label>
+          <input
+            id="ghRepo"
+            type="text"
+            placeholder="sweet-tea-tokens or https://github.com/hosam-hubspire/…"
+          />
+          <span class="muted"
+            >Bare name uses the owner above. Or paste an existing
+            <code>owner/repo</code> / GitHub URL.</span
+          >
+        </div>
+        <div class="field">
+          <label for="ghPath">File path in repo</label>
+          <input
+            id="ghPath"
+            type="text"
+            placeholder="tokens/design-tokens.json"
+          />
+        </div>
+        <label class="check">
+          <input type="checkbox" id="ghCreate" checked />
+          <span
+            >Create the repository if it doesn’t exist (private by
+            default)</span
+          >
+        </label>
+        <label class="check">
+          <input type="checkbox" id="ghPrivate" checked />
+          <span>Private repo when creating</span>
+        </label>
+        <div class="actions">
+          <button type="button" class="btn-secondary" id="saveSettingsBtn">
+            Save settings
+          </button>
+          <button type="button" class="btn-ghost" id="clearTokenBtn">
+            Clear token
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button type="button" class="btn-primary" id="exportBtn" disabled>
+        Export &amp; download
+      </button>
+      <button type="button" class="btn-primary" id="pushBtn" disabled>
+        Push to GitHub
+      </button>
+      <button type="button" class="btn-secondary" id="downloadBtn" disabled>
+        Download again
+      </button>
+      <button type="button" class="btn-secondary" id="copyBtn" disabled>
+        Copy JSON
+      </button>
+    </div>
+
+    <p class="status" id="status">Starting…</p>
+    <p class="muted" id="githubLink" hidden></p>
+
+    <section class="panel preview-wrap">
+      <div class="panel-head">Preview</div>
+      <pre class="preview" id="preview">Waiting for variables…</pre>
+    </section>
+
+    <div class="footer">
+      <span class="muted">Local plugin · Design &amp; Dev Mode</span>
+      <button type="button" class="btn-ghost" id="closeBtn">Close</button>
+    </div>
+
+    <script>
+      const PREVIEW_LIMIT = 12000;
+
+      const state = {
+        summary: null,
+        settings: null,
+        lastJson: "",
+        lastFileName: "",
+        lastMeta: null,
+        chunkBuffer: [],
+        expectedChunks: 0,
+        receiving: false,
+        downloadOnDone: true,
+        awaitingSettingsSave: false,
+      };
+
+      const els = {
+        fileLabel: document.getElementById("fileLabel"),
+        collectionCount: document.getElementById("collectionCount"),
+        variableCount: document.getElementById("variableCount"),
+        collections: document.getElementById("collections"),
+        exportBtn: document.getElementById("exportBtn"),
+        pushBtn: document.getElementById("pushBtn"),
+        downloadBtn: document.getElementById("downloadBtn"),
+        copyBtn: document.getElementById("copyBtn"),
+        saveSettingsBtn: document.getElementById("saveSettingsBtn"),
+        clearTokenBtn: document.getElementById("clearTokenBtn"),
+        status: document.getElementById("status"),
+        githubLink: document.getElementById("githubLink"),
+        preview: document.getElementById("preview"),
+        selectAll: document.getElementById("selectAll"),
+        selectNone: document.getElementById("selectNone"),
+        closeBtn: document.getElementById("closeBtn"),
+        overlay: document.getElementById("overlay"),
+        overlayText: document.getElementById("overlayText"),
+        tokenState: document.getElementById("tokenState"),
+        ghToken: document.getElementById("ghToken"),
+        ghOwner: document.getElementById("ghOwner"),
+        ghRepo: document.getElementById("ghRepo"),
+        ghPath: document.getElementById("ghPath"),
+        ghBranch: document.getElementById("ghBranch"),
+        ghCreate: document.getElementById("ghCreate"),
+        ghPrivate: document.getElementById("ghPrivate"),
+      };
+
+      function setBusy(busy, message) {
+        els.overlay.classList.toggle("visible", busy);
+        if (message) els.overlayText.textContent = message;
+        const hasCollections =
+          state.summary && state.summary.collections.length > 0;
+        els.exportBtn.disabled = busy || !hasCollections;
+        els.pushBtn.disabled = busy || !hasCollections;
+      }
+
+      function setStatus(message, kind) {
+        els.status.textContent = message || "";
+        els.status.classList.toggle("error", kind === "error");
+        els.status.classList.toggle("busy", kind === "busy");
+      }
+
+      function selectedCollectionIds() {
+        return Array.from(
+          document.querySelectorAll('input[name="collection"]:checked')
+        ).map((el) => el.value);
+      }
+
+      function setSelection(all) {
+        document.querySelectorAll('input[name="collection"]').forEach((el) => {
+          el.checked = all;
+        });
+      }
+
+      function downloadBlob(filename, text) {
+        const blob = new Blob([text], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function showPreview(json) {
+        if (json.length > PREVIEW_LIMIT) {
+          els.preview.textContent =
+            json.slice(0, PREVIEW_LIMIT) +
+            "\n\n… preview truncated (" +
+            Math.round(json.length / 1024) +
+            " KB total). Use Download or Copy for the full file.";
+        } else {
+          els.preview.textContent = json;
+        }
+      }
+
+      function finishExport(json) {
+        state.lastJson = json;
+        state.receiving = false;
+        els.downloadBtn.disabled = false;
+        els.copyBtn.disabled = false;
+        showPreview(json);
+        if (state.downloadOnDone) {
+          downloadBlob(state.lastFileName, json);
+        }
+
+        const meta = state.lastMeta || {};
+        const detail =
+          meta.variableCount != null
+            ? `${meta.collectionCount} collections · ${meta.variableCount} variables`
+            : `${meta.fileCount || 0} token file(s)`;
+
+        setBusy(false);
+        if (!els.githubLink.hidden) {
+          setStatus(`Exported ${detail}.`, "ok");
+        } else {
+          setStatus(
+            state.downloadOnDone
+              ? `Exported ${detail}. Download started.`
+              : `Exported ${detail}.`,
+            "ok"
+          );
+        }
+      }
+
+      function applySettings(settings) {
+        state.settings = settings;
+        els.ghOwner.value = settings.owner || "hosam-hubspire";
+        els.ghRepo.value = settings.repoInput || "";
+        els.ghPath.value = settings.filePath || "tokens/design-tokens.json";
+        els.ghBranch.value = settings.branch || "main";
+        els.ghCreate.checked = settings.createIfMissing !== false;
+        els.ghPrivate.checked = settings.privateRepo !== false;
+        els.ghToken.placeholder = settings.hasToken
+          ? "Token saved — paste to replace"
+          : "github_pat_… or ghp_…";
+        els.tokenState.textContent = settings.hasToken
+          ? "Token saved"
+          : "No token";
+        els.tokenState.classList.toggle("ok", Boolean(settings.hasToken));
+        els.tokenState.classList.toggle("muted", !settings.hasToken);
+      }
+
+      function settingsFromForm() {
+        return {
+          token: els.ghToken.value.trim(),
+          owner: els.ghOwner.value.trim() || "hosam-hubspire",
+          repoInput: els.ghRepo.value.trim(),
+          filePath: els.ghPath.value.trim() || "tokens/design-tokens.json",
+          branch: els.ghBranch.value.trim() || "main",
+          createIfMissing: els.ghCreate.checked,
+          privateRepo: els.ghPrivate.checked,
+        };
+      }
+
+      function renderSummary(summary) {
+        state.summary = summary;
+        els.fileLabel.textContent = summary.fileName || "Untitled";
+        els.collectionCount.textContent = String(summary.collections.length);
+        els.variableCount.textContent = String(summary.totalVariables);
+
+        if (!summary.collections.length) {
+          els.collections.innerHTML =
+            '<div class="empty">No local variable collections in this file.</div>';
+          setBusy(false);
+          setStatus("No local variables found.", "error");
+          return;
+        }
+
+        els.collections.innerHTML = summary.collections
+          .map((c) => {
+            const modes = c.modes.join(", ") || "—";
+            return `
+              <div class="collection">
+                <label>
+                  <input type="checkbox" name="collection" value="${escapeAttr(
+                    c.id
+                  )}" checked />
+                  <span class="meta">
+                    <span class="name">${escapeHtml(c.name)}</span>
+                    <span class="detail"
+                      >${c.variableCount} variables · ${c.modeCount} mode${
+              c.modeCount === 1 ? "" : "s"
+            } (${escapeHtml(modes)})</span
+                    >
+                  </span>
+                </label>
+              </div>
+            `;
+          })
+          .join("");
+
+        setBusy(false);
+        setStatus(
+          `Ready — ${summary.totalVariables} variables in ${summary.collections.length} collections`,
+          "ok"
+        );
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function escapeAttr(str) {
+        return escapeHtml(str).replace(/'/g, "&#39;");
+      }
+
+      function startExport(downloadOnDone) {
+        const collectionIds = selectedCollectionIds();
+        if (!collectionIds.length) {
+          setStatus("Select at least one collection.", "error");
+          return false;
+        }
+
+        state.downloadOnDone = downloadOnDone;
+        els.githubLink.hidden = true;
+        els.githubLink.textContent = "";
+        setBusy(true, "Exporting tokens…");
+        setStatus("Exporting…", "busy");
+        state.lastJson = "";
+        state.chunkBuffer = [];
+        state.receiving = false;
+
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "EXPORT",
+              collectionIds,
+            },
+          },
+          "*"
+        );
+        return true;
+      }
+
+      els.exportBtn.addEventListener("click", () => {
+        startExport(true);
+      });
+
+      els.pushBtn.addEventListener("click", () => {
+        const collectionIds = selectedCollectionIds();
+        if (!collectionIds.length) {
+          setStatus("Select at least one collection.", "error");
+          return;
+        }
+
+        const form = settingsFromForm();
+        if (!form.token && !(state.settings && state.settings.hasToken)) {
+          setStatus("Add a GitHub personal access token first.", "error");
+          return;
+        }
+        if (!form.repoInput) {
+          setStatus("Enter a repo name or GitHub URL.", "error");
+          return;
+        }
+
+        state.downloadOnDone = false;
+        els.githubLink.hidden = true;
+        setBusy(true, "Pushing to GitHub…");
+        setStatus("Pushing to GitHub…", "busy");
+        state.lastJson = "";
+        state.chunkBuffer = [];
+        state.receiving = false;
+
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "PUSH_GITHUB",
+              collectionIds,
+              ...form,
+            },
+          },
+          "*"
+        );
+      });
+
+      els.downloadBtn.addEventListener("click", () => {
+        if (!state.lastJson) return;
+        downloadBlob(state.lastFileName || "tokens.json", state.lastJson);
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "NOTIFY",
+              message: "Downloaded tokens JSON",
+            },
+          },
+          "*"
+        );
+      });
+
+      els.copyBtn.addEventListener("click", async () => {
+        if (!state.lastJson) return;
+        try {
+          await navigator.clipboard.writeText(state.lastJson);
+          setStatus("Copied JSON to clipboard", "ok");
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: "NOTIFY",
+                message: "Copied to clipboard",
+              },
+            },
+            "*"
+          );
+        } catch (err) {
+          setStatus(
+            "Could not copy automatically — select preview text and copy.",
+            "error"
+          );
+        }
+      });
+
+      els.saveSettingsBtn.addEventListener("click", () => {
+        state.awaitingSettingsSave = true;
+        setStatus("Saving GitHub settings…", "busy");
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "SAVE_SETTINGS",
+              settings: settingsFromForm(),
+            },
+          },
+          "*"
+        );
+        els.ghToken.value = "";
+      });
+
+      els.clearTokenBtn.addEventListener("click", () => {
+        els.ghToken.value = "";
+        parent.postMessage({ pluginMessage: { type: "CLEAR_TOKEN" } }, "*");
+      });
+
+      els.selectAll.addEventListener("click", () => setSelection(true));
+      els.selectNone.addEventListener("click", () => setSelection(false));
+      els.closeBtn.addEventListener("click", () => {
+        parent.postMessage({ pluginMessage: { type: "CLOSE" } }, "*");
+      });
+
+      window.onmessage = (event) => {
+        const msg = event.data && event.data.pluginMessage;
+        if (!msg) return;
+
+        if (msg.type === "SUMMARY") {
+          renderSummary(msg.summary);
+          return;
+        }
+
+        if (msg.type === "SETTINGS") {
+          applySettings(msg.settings);
+          if (state.awaitingSettingsSave) {
+            state.awaitingSettingsSave = false;
+            setStatus(
+              msg.settings && msg.settings.hasToken
+                ? "GitHub settings saved (token stored)."
+                : "GitHub settings saved.",
+              "ok"
+            );
+          }
+          return;
+        }
+
+        if (msg.type === "PROGRESS") {
+          setBusy(true, msg.message || "Working…");
+          setStatus(msg.message || "Working…", "busy");
+          return;
+        }
+
+        if (msg.type === "EXPORT_START") {
+          state.receiving = true;
+          state.expectedChunks = msg.totalChunks || 1;
+          state.chunkBuffer = new Array(state.expectedChunks);
+          state.lastFileName = msg.fileName || "tokens.json";
+          state.lastMeta = msg.meta || {};
+          setBusy(
+            true,
+            `Receiving export (${Math.round((msg.byteLength || 0) / 1024)} KB)…`
+          );
+          setStatus("Receiving export…", "busy");
+          return;
+        }
+
+        if (msg.type === "EXPORT_CHUNK") {
+          state.chunkBuffer[msg.index] = msg.chunk;
+          setStatus(
+            `Receiving chunk ${msg.index + 1}/${msg.totalChunks}…`,
+            "busy"
+          );
+          return;
+        }
+
+        if (msg.type === "EXPORT_DONE") {
+          if (!state.receiving) return;
+          const missing = state.chunkBuffer.some((c) => c == null);
+          if (missing) {
+            setBusy(false);
+            setStatus(
+              "Export incomplete — some chunks missing. Try again.",
+              "error"
+            );
+            return;
+          }
+          finishExport(state.chunkBuffer.join(""));
+          return;
+        }
+
+        if (msg.type === "GITHUB_PUSH_RESULT") {
+          setBusy(false);
+          els.githubLink.hidden = false;
+          els.githubLink.innerHTML = `Opened on GitHub: <a class="link" href="${escapeAttr(
+            msg.htmlUrl
+          )}" target="_blank" rel="noopener noreferrer">${escapeHtml(
+            msg.owner + "/" + msg.repo
+          )}</a>`;
+          setStatus(
+            `Pushed to ${msg.owner}/${msg.repo} (${msg.filePath})`,
+            "ok"
+          );
+          return;
+        }
+
+        if (msg.type === "ERROR") {
+          setBusy(false);
+          setStatus(msg.message || "Something went wrong", "error");
+        }
+      };
+
+      setBusy(true, "Scanning variables…");
+      parent.postMessage({ pluginMessage: { type: "GET_SUMMARY" } }, "*");
+      parent.postMessage({ pluginMessage: { type: "GET_SETTINGS" } }, "*");
+    </script>
+  </body>
+</html>
