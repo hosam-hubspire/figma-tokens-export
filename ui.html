@@ -462,14 +462,11 @@
         </div>
         <label class="check">
           <input type="checkbox" id="ghCreate" checked />
-          <span
-            >Create the repository if it doesn’t exist (private by
-            default)</span
-          >
+          <span>Create the repository if it doesn’t exist</span>
         </label>
         <label class="check">
           <input type="checkbox" id="ghPrivate" checked />
-          <span>Private repo when creating</span>
+          <span>Make new repositories private</span>
         </label>
         <div class="actions">
           <button type="button" class="btn-secondary" id="saveSettingsBtn">
@@ -489,12 +486,6 @@
       <button type="button" class="btn-primary" id="pushBtn" disabled>
         Push to GitHub
       </button>
-      <button type="button" class="btn-secondary" id="downloadBtn" disabled>
-        Download again
-      </button>
-      <button type="button" class="btn-secondary" id="copyBtn" disabled>
-        Copy JSON
-      </button>
     </div>
 
     <p class="status" id="status">Starting…</p>
@@ -502,7 +493,7 @@
 
     <section class="panel preview-wrap">
       <div class="panel-head">Preview</div>
-      <pre class="preview" id="preview">Waiting for variables…</pre>
+      <pre class="preview" id="preview">Run Export or Push to preview the JSON here.</pre>
     </section>
 
     <div class="footer">
@@ -533,8 +524,6 @@
         collections: document.getElementById("collections"),
         exportBtn: document.getElementById("exportBtn"),
         pushBtn: document.getElementById("pushBtn"),
-        downloadBtn: document.getElementById("downloadBtn"),
-        copyBtn: document.getElementById("copyBtn"),
         saveSettingsBtn: document.getElementById("saveSettingsBtn"),
         clearTokenBtn: document.getElementById("clearTokenBtn"),
         status: document.getElementById("status"),
@@ -600,7 +589,7 @@
             json.slice(0, PREVIEW_LIMIT) +
             "\n\n… preview truncated (" +
             Math.round(json.length / 1024) +
-            " KB total). Use Download or Copy for the full file.";
+            " KB total). Use Download for the full file.";
         } else {
           els.preview.textContent = json;
         }
@@ -609,8 +598,6 @@
       function finishExport(json) {
         state.lastJson = json;
         state.receiving = false;
-        els.downloadBtn.disabled = false;
-        els.copyBtn.disabled = false;
         showPreview(json);
         if (state.downloadOnDone) {
           downloadBlob(state.lastFileName, json);
@@ -788,42 +775,6 @@
           },
           "*"
         );
-      });
-
-      els.downloadBtn.addEventListener("click", () => {
-        if (!state.lastJson) return;
-        downloadBlob(state.lastFileName || "tokens.json", state.lastJson);
-        parent.postMessage(
-          {
-            pluginMessage: {
-              type: "NOTIFY",
-              message: "Downloaded tokens JSON",
-            },
-          },
-          "*"
-        );
-      });
-
-      els.copyBtn.addEventListener("click", async () => {
-        if (!state.lastJson) return;
-        try {
-          await navigator.clipboard.writeText(state.lastJson);
-          setStatus("Copied JSON to clipboard", "ok");
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: "NOTIFY",
-                message: "Copied to clipboard",
-              },
-            },
-            "*"
-          );
-        } catch (err) {
-          setStatus(
-            "Could not copy automatically — select preview text and copy.",
-            "error"
-          );
-        }
       });
 
       els.saveSettingsBtn.addEventListener("click", () => {

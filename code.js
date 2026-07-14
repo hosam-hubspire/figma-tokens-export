@@ -566,7 +566,7 @@ async function handleGitHubPush(msg) {
     (commit && commit.content && commit.content.html_url) ||
     `https://github.com/${parsed.owner}/${parsed.repo}/blob/${targetBranch}/${filePath}`;
 
-  // Also send export to UI so download/copy still work.
+  // Also send export to UI so download / preview still work.
   sendJsonPayload(exported);
 
   sendToUI({
