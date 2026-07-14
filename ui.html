@@ -287,25 +287,6 @@
         color: var(--text);
       }
 
-      .preview-wrap {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-height: 80px;
-      }
-
-      .preview {
-        margin: 0;
-        padding: 10px 12px;
-        max-height: 100px;
-        overflow: auto;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        font-size: 11px;
-        line-height: 1.4;
-        white-space: pre;
-        background: var(--bg-secondary);
-      }
-
       .empty {
         padding: 14px 12px;
         color: var(--text-secondary);
@@ -486,23 +467,15 @@
     <p class="status" id="status">Starting…</p>
     <p class="muted" id="githubLink" hidden></p>
 
-    <section class="panel preview-wrap">
-      <div class="panel-head">Preview</div>
-      <pre class="preview" id="preview">Run Export or Push to preview the JSON here.</pre>
-    </section>
-
     <div class="footer">
       <span class="muted">Local plugin · Design &amp; Dev Mode</span>
       <button type="button" class="btn-ghost" id="closeBtn">Close</button>
     </div>
 
     <script>
-      const PREVIEW_LIMIT = 12000;
-
       const state = {
         summary: null,
         settings: null,
-        lastJson: "",
         lastFileName: "",
         lastMeta: null,
         chunkBuffer: [],
@@ -523,7 +496,6 @@
         clearTokenBtn: document.getElementById("clearTokenBtn"),
         status: document.getElementById("status"),
         githubLink: document.getElementById("githubLink"),
-        preview: document.getElementById("preview"),
         selectAll: document.getElementById("selectAll"),
         selectNone: document.getElementById("selectNone"),
         closeBtn: document.getElementById("closeBtn"),
@@ -576,22 +548,8 @@
         URL.revokeObjectURL(url);
       }
 
-      function showPreview(json) {
-        if (json.length > PREVIEW_LIMIT) {
-          els.preview.textContent =
-            json.slice(0, PREVIEW_LIMIT) +
-            "\n\n… preview truncated (" +
-            Math.round(json.length / 1024) +
-            " KB total). Use Download for the full file.";
-        } else {
-          els.preview.textContent = json;
-        }
-      }
-
       function finishExport(json) {
-        state.lastJson = json;
         state.receiving = false;
-        showPreview(json);
         if (state.downloadOnDone) {
           downloadBlob(state.lastFileName, json);
         }
@@ -709,7 +667,6 @@
         els.githubLink.textContent = "";
         setBusy(true, "Exporting tokens…");
         setStatus("Exporting…", "busy");
-        state.lastJson = "";
         state.chunkBuffer = [];
         state.receiving = false;
 
@@ -750,7 +707,6 @@
         els.githubLink.hidden = true;
         setBusy(true, "Pushing to GitHub…");
         setStatus("Pushing to GitHub…", "busy");
-        state.lastJson = "";
         state.chunkBuffer = [];
         state.receiving = false;
 

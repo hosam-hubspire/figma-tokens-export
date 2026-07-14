@@ -9,7 +9,7 @@ const DEFAULT_OWNER = "hosam-hubspire";
 
 figma.showUI(__html__, {
   width: 460,
-  height: 740,
+  height: 620,
   themeColors: true,
 });
 
@@ -544,9 +544,6 @@ async function handleGitHubPush(msg) {
     (commit && commit.content && commit.content.html_url) ||
     `https://github.com/${parsed.owner}/${parsed.repo}/blob/${targetBranch}/${filePath}`;
 
-  // Also send export to UI so download / preview still work.
-  sendJsonPayload(exported);
-
   sendToUI({
     type: "GITHUB_PUSH_RESULT",
     ok: true,
@@ -555,6 +552,7 @@ async function handleGitHubPush(msg) {
     repo: parsed.repo,
     branch: targetBranch,
     filePath,
+    meta: exported.meta,
   });
 
   figma.notify(`Pushed to ${parsed.owner}/${parsed.repo}`);
