@@ -224,8 +224,6 @@ async function loadSettings() {
     repoInput: stored.repoInput || "",
     filePath: stored.filePath || "tokens/design-tokens.json",
     branch: stored.branch || "main",
-    createIfMissing: stored.createIfMissing !== false,
-    privateRepo: stored.privateRepo !== false,
   };
 }
 
@@ -252,12 +250,10 @@ function publicSettings(settings) {
     repoInput: settings.repoInput || "",
     filePath: settings.filePath || "tokens/design-tokens.json",
     branch: settings.branch || "main",
-    createIfMissing: settings.createIfMissing !== false,
-    privateRepo: settings.privateRepo !== false,
   };
 }
 
-async function ensureRepository(token, owner, repo, { createIfMissing, privateRepo }) {
+async function ensureRepository(token, owner, repo) {
   try {
     return await githubFetch(
       `https://api.github.com/repos/${owner}/${repo}`,
@@ -266,16 +262,11 @@ async function ensureRepository(token, owner, repo, { createIfMissing, privateRe
     );
   } catch (error) {
     if (error.status !== 404) throw error;
-    if (!createIfMissing) {
-      throw new Error(
-        `Repo ${owner}/${repo} does not exist. Create it on GitHub, or enable “Create repo if missing”.`
-      );
-    }
   }
 
   sendToUI({
     type: "PROGRESS",
-    message: `Creating ${owner}/${repo}…`,
+    message: `Creating private repo ${owner}/${repo}…`,
   });
 
   const account = await githubFetch(`https://api.github.com/users/${owner}`, token, {
@@ -284,7 +275,7 @@ async function ensureRepository(token, owner, repo, { createIfMissing, privateRe
 
   const payload = {
     name: repo,
-    private: Boolean(privateRepo),
+    private: true,
     description: `Design tokens exported from Figma (${figma.root.name})`,
     auto_init: true,
   };
@@ -517,14 +508,6 @@ async function handleGitHubPush(msg) {
   const parsed = parseRepoInput(repoInput, ownerDefault);
   const filePath = (msg.filePath || settings.filePath || "tokens/design-tokens.json").trim();
   const branch = (msg.branch || settings.branch || "main").trim() || "main";
-  const createIfMissing =
-    msg.createIfMissing != null
-      ? Boolean(msg.createIfMissing)
-      : settings.createIfMissing !== false;
-  const privateRepo =
-    msg.privateRepo != null
-      ? Boolean(msg.privateRepo)
-      : settings.privateRepo !== false;
 
   // Persist latest non-secret fields (and token if provided).
   await saveSettings({
@@ -533,8 +516,6 @@ async function handleGitHubPush(msg) {
     repoInput,
     filePath,
     branch,
-    createIfMissing,
-    privateRepo,
   });
 
   sendToUI({ type: "PROGRESS", message: "Exporting tokens…" });
@@ -544,10 +525,7 @@ async function handleGitHubPush(msg) {
     type: "PROGRESS",
     message: `Checking ${parsed.owner}/${parsed.repo}…`,
   });
-  const repo = await ensureRepository(token, parsed.owner, parsed.repo, {
-    createIfMissing,
-    privateRepo,
-  });
+  const repo = await ensureRepository(token, parsed.owner, parsed.repo);
 
   const targetBranch = branch || repo.default_branch || "main";
   sendToUI({ type: "PROGRESS", message: `Pushing ${filePath}…` });
@@ -577,7 +555,6 @@ async function handleGitHubPush(msg) {
     repo: parsed.repo,
     branch: targetBranch,
     filePath,
-    created: Boolean(createIfMissing && repo && repo.created_at),
   });
 
   figma.notify(`Pushed to ${parsed.owner}/${parsed.repo}`);

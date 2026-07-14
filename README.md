@@ -52,8 +52,8 @@ Works in Design mode and Dev Mode (`editorType`: `figma` + `dev`).
 
 | Input | Behavior |
 | --- | --- |
-| Repo **name** only (e.g. `sweet-tea-tokens`) | Uses owner/org (default `hosam-hubspire`). Creates the repo if missing (optional), then commits the token file. |
-| `owner/repo` or full GitHub **URL** | Uses that existing (or creatable) repo. |
+| Repo **name** only (e.g. `sweet-tea-tokens`) | Uses owner/org (default `hosam-hubspire`). Creates a **private** repo if missing, then commits the token file. |
+| `owner/repo` or full GitHub **URL** | Uses that repo (creates it as private if missing). |
 
 ### Setup
 
@@ -65,10 +65,9 @@ Works in Design mode and Dev Mode (`editorType`: `figma` + `dev`).
    - Repo name or URL
    - File path (default `tokens/design-tokens.json`)
    - Branch (default `main`)
-   - Enable **Create the repository if it doesn’t exist** if you want the plugin to create it
 3. Click **Push to GitHub**.
 
-The token is stored in Figma `clientStorage` on your machine (not in the design file). Use **Clear token** to remove it.
+Missing repos are always created as **private**. The token is stored in Figma `clientStorage` on your machine (not in the design file). Use **Clear token** to remove it.
 
 ## Files
 

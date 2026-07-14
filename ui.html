@@ -460,14 +460,9 @@
             placeholder="tokens/design-tokens.json"
           />
         </div>
-        <label class="check">
-          <input type="checkbox" id="ghCreate" checked />
-          <span>Create the repository if it doesn’t exist</span>
-        </label>
-        <label class="check">
-          <input type="checkbox" id="ghPrivate" checked />
-          <span>Make new repositories private</span>
-        </label>
+        <p class="muted" style="margin: 0">
+          If the repo doesn’t exist, it will be created as a <strong>private</strong> repository under the owner above.
+        </p>
         <div class="actions">
           <button type="button" class="btn-secondary" id="saveSettingsBtn">
             Save settings
@@ -540,8 +535,6 @@
         ghRepo: document.getElementById("ghRepo"),
         ghPath: document.getElementById("ghPath"),
         ghBranch: document.getElementById("ghBranch"),
-        ghCreate: document.getElementById("ghCreate"),
-        ghPrivate: document.getElementById("ghPrivate"),
       };
 
       function setBusy(busy, message) {
@@ -628,8 +621,6 @@
         els.ghRepo.value = settings.repoInput || "";
         els.ghPath.value = settings.filePath || "tokens/design-tokens.json";
         els.ghBranch.value = settings.branch || "main";
-        els.ghCreate.checked = settings.createIfMissing !== false;
-        els.ghPrivate.checked = settings.privateRepo !== false;
         els.ghToken.placeholder = settings.hasToken
           ? "Token saved — paste to replace"
           : "github_pat_… or ghp_…";
@@ -647,8 +638,6 @@
           repoInput: els.ghRepo.value.trim(),
           filePath: els.ghPath.value.trim() || "tokens/design-tokens.json",
           branch: els.ghBranch.value.trim() || "main",
-          createIfMissing: els.ghCreate.checked,
-          privateRepo: els.ghPrivate.checked,
         };
       }
 
